@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cinevault.cinevault.dto.MovieDto;
+import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.service.MovieService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import jakarta.websocket.server.PathParam;
 
 @RestController // per dire al framework che qsta classe espone delle API REST
 @RequestMapping("/api/movies") // per definire il prefisso
@@ -37,5 +39,16 @@ public class MovieController {
     public MovieDto getMovieDetails(@PathVariable(value = "id") int movieId) {
         return movieService.getMovieDetails(movieId);
     }
+
+    @PostMapping("/favorites")
+    public Movie saveMovie(@RequestBody MovieDto dto) {
+        return movieService.saveMovie(dto);
+    }
+    
+    @GetMapping("/favorites")
+    public List<MovieDto> getFavoriteMovies() {
+        return movieService.getFavoriteMovies();
+    }
+    
     
 }
