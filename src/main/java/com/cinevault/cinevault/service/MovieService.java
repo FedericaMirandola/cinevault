@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cinevault.cinevault.client.TmdbClient;
 import com.cinevault.cinevault.dto.MovieDto;
@@ -90,6 +91,14 @@ public class MovieService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Transactional
+    public int deleteFavoriteByTmdbId (Long tmdbId) {
+
+        int movieDeleted = movieRepository.deleteByTmdbId(tmdbId);
+
+        return movieDeleted;
     }
 
 }

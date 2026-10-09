@@ -9,5 +9,7 @@ import com.cinevault.cinevault.entity.Movie;
 public interface MovieRepository extends JpaRepository<Movie, Long>{
 
     Optional<Movie> findByTmdbId(Long tmdbId);
+
+    Integer deleteByTmdbId(Long tmdbId);
     
 }

@@ -152,4 +152,19 @@ public class MovieServiceTest {
         // verifico che il repository sia stato interrogato
         verify(movieRepository).findAll();
     }
+
+    @Test 
+    void deleteFavoriteByTmdbId_shouldDeleteFavoriteMovieByTmdbId() {
+
+        when(movieRepository.deleteByTmdbId(456L)).thenReturn(1);
+
+        movieService = new MovieService(tmdbClient, movieRepository);
+
+        int result = movieService.deleteFavoriteByTmdbId(456L);
+
+        assertEquals(1, result);
+
+        verify(movieRepository).deleteByTmdbId(456L);
+
+    }
 }

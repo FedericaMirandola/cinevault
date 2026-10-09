@@ -16,9 +16,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.service.MovieService;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @ExtendWith(MockitoExtension.class)
 public class MovieControllerTest {
@@ -86,5 +88,22 @@ public class MovieControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Titolo 1"))
                 .andExpect(jsonPath("$[1].title").value("Titolo 2"));
+    }
+
+    @Test
+    void deleteFavoriteByTmdbId_shouldDeleteFavoriteMovie() throws Exception {
+
+        when(movieService.deleteFavoriteByTmdbId(123L)).thenReturn(1);
+
+        MovieController movieController = new MovieController(movieService);
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(movieController).build();
+
+        mockMvc.perform(delete("/api/movies/favorites/{tmdbId}", 123L))
+               .andExpect(status().isOk())
+               .andExpect(content().string("1"));
+
+
+        verify(movieService).deleteFavoriteByTmdbId(123L);
     }
 }

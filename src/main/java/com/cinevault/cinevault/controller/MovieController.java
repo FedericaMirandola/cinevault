@@ -2,6 +2,7 @@ package com.cinevault.cinevault.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +51,8 @@ public class MovieController {
         return movieService.getFavoriteMovies();
     }
     
-    
+    @DeleteMapping("/favorites/{tmdbId}")
+    public int deleteFavoriteByTmdbId(@PathVariable(value = "tmdbId") Long tmdbId) {
+        return movieService.deleteFavoriteByTmdbId(tmdbId);
+    } 
 }
