@@ -1,5 +1,6 @@
 package com.cinevault.cinevault.service;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,8 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cinevault.cinevault.client.TmdbClient;
+import com.cinevault.cinevault.controller.MovieController;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.entity.Movie;
+import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
 import com.cinevault.cinevault.repository.MovieRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +30,8 @@ public class MovieServiceTest {
     private TmdbClient tmdbClient;
 
     private MovieService movieService;
+
+    private MovieController movieController;
 
     @Mock
     private MovieRepository movieRepository;
@@ -153,7 +158,7 @@ public class MovieServiceTest {
         verify(movieRepository).findAll();
     }
 
-    @Test 
+    @Test
     void deleteFavoriteByTmdbId_shouldDeleteFavoriteMovieByTmdbId() {
 
         when(movieRepository.deleteByTmdbId(456L)).thenReturn(1);
@@ -165,6 +170,21 @@ public class MovieServiceTest {
         assertEquals(1, result);
 
         verify(movieRepository).deleteByTmdbId(456L);
+
+    }
+
+    @Test
+    void deleteFavoriteByTmdbId_shouldThrowException_whenNoResultIsFound() {
+
+        when(movieRepository.deleteByTmdbId(123L)).thenReturn(0);
+
+        movieService = new MovieService(tmdbClient, movieRepository);
+
+        assertThrows(FavoriteMovieNotFoundException.class, () -> {
+            movieService.deleteFavoriteByTmdbId(123L);
+        });
+
+        verify(movieRepository).deleteByTmdbId(123L);
 
     }
 }
