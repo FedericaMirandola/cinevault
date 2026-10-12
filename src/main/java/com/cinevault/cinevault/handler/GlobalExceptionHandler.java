@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
 import com.cinevault.cinevault.exception.TmdbException;
 
+import jakarta.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
@@ -22,5 +24,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FavoriteMovieNotFoundException.class)
     public String movieNotFound (FavoriteMovieNotFoundException exception) {
         return exception.getMessage();
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class) 
+    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage()); 
     }
 }

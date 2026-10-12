@@ -2,6 +2,7 @@ package com.cinevault.cinevault.controller;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.service.MovieService;
+
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
+@Validated 
 @RestController // per dire al framework che qsta classe espone delle API REST
 @RequestMapping("/api/movies") // per definire il prefisso
 public class MovieController {
@@ -32,7 +36,7 @@ public class MovieController {
     }
 
     @GetMapping("/search") // crea GET /api/movies/search?query = stringa da cercare
-    public List<MovieDto> searchMovies(@RequestParam String query) {
+    public List<MovieDto> searchMovies(@RequestParam @NotBlank  String query) {
         return movieService.searchMovies(query);
     }
 
