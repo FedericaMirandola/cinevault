@@ -1,13 +1,16 @@
 package com.cinevault.cinevault.service;
 
+import com.cinevault.cinevault.controller.MovieController;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cinevault.cinevault.client.TmdbClient;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.entity.Movie;
+import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
 import com.cinevault.cinevault.repository.MovieRepository;
 
 @Service
@@ -90,6 +93,18 @@ public class MovieService {
                     return dto;
                 })
                 .toList();
+    }
+
+    @Transactional
+    public int deleteFavoriteByTmdbId (Long tmdbId) {
+
+        int movieDeleted = movieRepository.deleteByTmdbId(tmdbId);
+
+        if (movieDeleted == 0) {
+            throw new FavoriteMovieNotFoundException("Attenzione. Nessun film presente nel DB con questo ID");
+        }
+
+        return movieDeleted;
     }
 
 }
