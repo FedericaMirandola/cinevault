@@ -2,6 +2,7 @@ package com.cinevault.cinevault.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -173,5 +174,28 @@ public class TmdbClientTest {
         assertEquals(
                 "/movie/157336",
                 request.getPath());
+    }
+
+    @Test
+    void searchMovies_shouldReturnEmptyList_whenNoResultsFound() throws Exception {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .addHeader("Content-Type", "application/json")
+                        .setBody("""
+                                {
+                                    "page": 1,
+                                    "results": [
+                                        
+                                    ]
+                                    }
+                                """));
+
+        List<MovieDto> result = tmdbClient.searchMovies("FilmTest");
+
+        //assertEquals(0, result.size());
+        assertTrue(result.isEmpty());
+
     }
 }

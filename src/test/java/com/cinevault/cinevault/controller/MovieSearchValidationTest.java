@@ -22,6 +22,10 @@ import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.handler.GlobalExceptionHandler;
 import com.cinevault.cinevault.service.MovieService;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+
+
 @WebMvcTest(MovieController.class)
 @Import(GlobalExceptionHandler.class)
 class MovieSearchValidationTest {
@@ -68,5 +72,19 @@ class MovieSearchValidationTest {
                 .andExpect(status().isBadRequest());//verifica che l'API risponda con HTTP 400
 
         verify(movieService, never()).searchMovies("");//verifica che la richiesta non valida venga bloccata prima di arrivare al service.
+    }
+
+    @Test
+    void searchMovies_shouldReturnEmptyList_whenNoResultsFound() throws Exception{
+
+        when(movieService.searchMovies("FilmTest")).thenReturn(List.of());
+        mockMvc.perform(get("/api/movies/search")
+                .param("query", "FilmTest"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("[]"));
+                
+
+        verify(movieService).searchMovies("FilmTest");
+        
     }
 }
