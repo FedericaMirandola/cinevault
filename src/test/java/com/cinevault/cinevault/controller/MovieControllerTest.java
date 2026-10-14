@@ -3,7 +3,6 @@ package com.cinevault.cinevault.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 import java.util.List;
 
@@ -14,16 +13,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.cinevault.cinevault.dto.GenreDto;
+import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.service.MovieService;
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 
 @ExtendWith(MockitoExtension.class)
 public class MovieControllerTest {
@@ -109,6 +108,43 @@ public class MovieControllerTest {
         verify(movieService).deleteFavoriteByTmdbId(123L);
     }
 
-    
+    @Test
+    void getMovieDetails_shouldReturnMovieDetails() throws Exception{
+
+        GenreDto genre = new GenreDto();
+        genre.setId(1L);
+        genre.setName("Fantasy");
+
+        MovieDetailsDto newMovie = new MovieDetailsDto();
+        newMovie.setId(113L);
+        newMovie.setTitle("NewMovie");
+        newMovie.setOverview("New movie overview");
+        newMovie.setVoteAverage(7.2);
+        newMovie.setReleaseDate("2026-05-12");
+        newMovie.setRuntime(142);
+        newMovie.setGenres(List.of(genre));
+
+        when(movieService.getMovieDetails(113)).thenReturn(newMovie);
+
+        MovieController movieController = new MovieController(movieService);
+
+        // crea il nostro ambiente HTTP "finto"
+        MockMvc mockMvc = MockMvcBuilders
+                .standaloneSetup(movieController)
+                .build();
+
+        
+        mockMvc.perform(get("/api/movies/113"))
+                // controlla che il Controller risponda con HTTP 200
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("NewMovie"))
+                .andExpect(jsonPath("$.overview").value("New movie overview"))
+                .andExpect(jsonPath("$.release_date").value("2026-05-12"))
+                .andExpect(jsonPath("$.runtime").value(142))
+                .andExpect(jsonPath("$.genres[0].id").value(1))
+                .andExpect(jsonPath("$.genres[0].name").value("Fantasy"));
+
+        verify(movieService).getMovieDetails(113);
+    }
 
 }
