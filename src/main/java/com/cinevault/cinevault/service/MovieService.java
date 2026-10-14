@@ -1,6 +1,5 @@
 package com.cinevault.cinevault.service;
 
-import com.cinevault.cinevault.controller.MovieController;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cinevault.cinevault.client.TmdbClient;
+import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
@@ -39,9 +39,9 @@ public class MovieService {
 
     }
 
-    public MovieDto getMovieDetails(int movieId) {
+    public MovieDetailsDto getMovieDetails(int movieId) {
 
-        MovieDto details = tmdbClient.getMovieDetails(movieId);
+        MovieDetailsDto details = tmdbClient.getMovieDetails(movieId);
 
         return details;
 

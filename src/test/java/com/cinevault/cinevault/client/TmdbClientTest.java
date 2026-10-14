@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.exception.TmdbException;
 
@@ -158,16 +159,30 @@ public class TmdbClientTest {
                                     "id": 157336,
                                     "title": "Interstellar",
                                     "overview": "Un film di fantascienza",
-                                    "vote_average": 8.5
+                                    "vote_average": 8.5,
+                                    "release_date": "2014-11-24",
+                                    "runtime": 169,
+                                    "genres": [ 
+                                        {
+                                        "id": 12, 
+                                        "name": "Sci-fi"
+                                        }
+                                    ]
                                 }
                                 """));
         
-        MovieDto result = tmdbClient.getMovieDetails(157336);
+       MovieDetailsDto result = tmdbClient.getMovieDetails(157336);
 
        assertEquals(157336, result.getId());
        assertEquals("Interstellar", result.getTitle());
        assertEquals("Un film di fantascienza", result.getOverview());
        assertEquals(8.5, result.getVoteAverage());
+       assertEquals("2014-11-24", result.getReleaseDate());
+       assertEquals(169, result.getRuntime());
+       assertEquals(12, result.getGenres().get(0).getId());
+       assertEquals("Sci-fi", result.getGenres().get(0).getName());
+       
+       
 
        RecordedRequest request = mockWebServer.takeRequest();
 

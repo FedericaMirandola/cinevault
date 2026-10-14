@@ -2,7 +2,6 @@ package com.cinevault.cinevault.service;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,7 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cinevault.cinevault.client.TmdbClient;
-import com.cinevault.cinevault.controller.MovieController;
+import com.cinevault.cinevault.dto.GenreDto;
+import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
@@ -30,8 +30,6 @@ public class MovieServiceTest {
     private TmdbClient tmdbClient;
 
     private MovieService movieService;
-
-    private MovieController movieController;
 
     @Mock
     private MovieRepository movieRepository;
@@ -185,6 +183,41 @@ public class MovieServiceTest {
         });
 
         verify(movieRepository).deleteByTmdbId(123L);
+
+    }
+
+    @Test
+    void getMovieDetails_shouldReturnMovieDetails() {
+        // Arrange
+        GenreDto genre = new GenreDto();
+        genre.setId(1L);
+        genre.setName("Fantasy");
+
+        MovieDetailsDto newMovie = new MovieDetailsDto();
+        newMovie.setId(113L);
+        newMovie.setTitle("NewMovie");
+        newMovie.setOverview("New movie overview");
+        newMovie.setVoteAverage(7.2);
+        newMovie.setReleaseDate("2026-05-12");
+        newMovie.setRuntime(142);
+        newMovie.setGenres(List.of(genre));
+
+        // Act
+        when(tmdbClient.getMovieDetails(113)).thenReturn(newMovie);
+
+        MovieService movieService = new MovieService(tmdbClient, movieRepository);
+
+        MovieDetailsDto result = movieService.getMovieDetails(113);
+
+        // Assert
+        assertEquals(113L, result.getId());
+        assertEquals("NewMovie", result.getTitle());
+        assertEquals("New movie overview", result.getOverview());
+        assertEquals(7.2, result.getVoteAverage());
+        assertEquals("2026-05-12", result.getReleaseDate());
+        assertEquals(142, result.getRuntime());
+        assertEquals("Fantasy", result.getGenres().get(0).getName());
+        assertEquals(1L, result.getGenres().get(0).getId());
 
     }
 }

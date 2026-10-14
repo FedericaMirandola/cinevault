@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
 import com.cinevault.cinevault.dto.MovieResponseDto;
 import com.cinevault.cinevault.exception.TmdbException;
@@ -68,9 +69,9 @@ public class TmdbClient {
         
     }
 
-    public MovieDto getMovieDetails (int movieId) {
+    public MovieDetailsDto getMovieDetails (int movieId) {
 
-        MovieDto response = webClient.get().uri(uriBuilder -> uriBuilder
+        MovieDetailsDto response = webClient.get().uri(uriBuilder -> uriBuilder
                 .path("/movie/{id}")
                 .build(movieId))
                 .retrieve()
@@ -80,7 +81,7 @@ public class TmdbClient {
                             HttpStatusCode status = clientResponse.statusCode();
                             return Mono.error(new TmdbException("errore di risposta da TMDB", status));
                         })
-                .bodyToMono(MovieDto.class)
+                .bodyToMono(MovieDetailsDto.class)
                 .block();
 
           if (response == null) {
