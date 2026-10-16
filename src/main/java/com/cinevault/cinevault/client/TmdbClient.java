@@ -45,11 +45,12 @@ public class TmdbClient {
         return response.getResults();
     }
 
-    public List<MovieDto> searchMovies(String query) {
+    public MovieResponseDto searchMovies(String query, int page) {
 
         MovieResponseDto response = webClient.get().uri(uriBuilder -> uriBuilder
                 .path("/search/movie")
                 .queryParam("query", query)
+                .queryParam("page", page)
                 .build())
                 .retrieve()
                 .onStatus(
@@ -65,7 +66,7 @@ public class TmdbClient {
             throw new RuntimeException("Nessun film trovato");
         }
 
-        return response.getResults();
+        return response;
         
     }
 

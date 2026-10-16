@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cinevault.cinevault.client.TmdbClient;
 import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
+import com.cinevault.cinevault.dto.MovieResponseDto;
 import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
 import com.cinevault.cinevault.repository.MovieRepository;
@@ -31,9 +32,9 @@ public class MovieService {
         return movies;
     }
 
-    public List<MovieDto> searchMovies(String query) {
+    public MovieResponseDto searchMovies(String query, int page) {
 
-        List<MovieDto> movies = tmdbClient.searchMovies(query);
+        MovieResponseDto movies = tmdbClient.searchMovies(query, page);
 
         return movies;
 

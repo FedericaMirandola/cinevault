@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
+import com.cinevault.cinevault.dto.MovieResponseDto;
 import com.cinevault.cinevault.exception.TmdbException;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -131,18 +132,18 @@ public class TmdbClientTest {
                                     }
                                 """));
 
-        List<MovieDto> result = tmdbClient.searchMovies("Interstellar");
+        MovieResponseDto result = tmdbClient.searchMovies("Interstellar", 1);
 
-        assertEquals(2, result.size());
-        assertEquals("Interstellar", result.get(0).getTitle());
-        assertEquals(8.6, result.get(0).getVoteAverage());
+        assertEquals("Interstellar", result.getResults().get(0).getTitle());
+        assertEquals(1, result.getPage());
+        assertEquals(2, result.getResults().size());
 
         // voglio verificare: Il mio codice ha costruito correttamente la richiesta che
         // volevo mandare?
         RecordedRequest request = mockWebServer.takeRequest();
 
         assertEquals(
-                "/search/movie?query=Interstellar",
+                "/search/movie?query=Interstellar&page=1",
                 request.getPath());
 
     }
@@ -162,29 +163,27 @@ public class TmdbClientTest {
                                     "vote_average": 8.5,
                                     "release_date": "2014-11-24",
                                     "runtime": 169,
-                                    "genres": [ 
+                                    "genres": [
                                         {
-                                        "id": 12, 
+                                        "id": 12,
                                         "name": "Sci-fi"
                                         }
                                     ]
                                 }
                                 """));
-        
-       MovieDetailsDto result = tmdbClient.getMovieDetails(157336);
 
-       assertEquals(157336, result.getId());
-       assertEquals("Interstellar", result.getTitle());
-       assertEquals("Un film di fantascienza", result.getOverview());
-       assertEquals(8.5, result.getVoteAverage());
-       assertEquals("2014-11-24", result.getReleaseDate());
-       assertEquals(169, result.getRuntime());
-       assertEquals(12, result.getGenres().get(0).getId());
-       assertEquals("Sci-fi", result.getGenres().get(0).getName());
-       
-       
+        MovieDetailsDto result = tmdbClient.getMovieDetails(157336);
 
-       RecordedRequest request = mockWebServer.takeRequest();
+        assertEquals(157336, result.getId());
+        assertEquals("Interstellar", result.getTitle());
+        assertEquals("Un film di fantascienza", result.getOverview());
+        assertEquals(8.5, result.getVoteAverage());
+        assertEquals("2014-11-24", result.getReleaseDate());
+        assertEquals(169, result.getRuntime());
+        assertEquals(12, result.getGenres().get(0).getId());
+        assertEquals("Sci-fi", result.getGenres().get(0).getName());
+
+        RecordedRequest request = mockWebServer.takeRequest();
 
         assertEquals(
                 "/movie/157336",
@@ -202,15 +201,51 @@ public class TmdbClientTest {
                                 {
                                     "page": 1,
                                     "results": [
-                                        
+
                                     ]
                                     }
                                 """));
 
-        List<MovieDto> result = tmdbClient.searchMovies("FilmTest");
+        MovieResponseDto result = tmdbClient.searchMovies("FilmTest", 1);
 
-        //assertEquals(0, result.size());
-        assertTrue(result.isEmpty());
+        // assertEquals(0, result.size());
+        assertTrue(result.getResults().isEmpty());
+
+    }
+
+    @Test
+    void searchMovies_shouldPassPageToTmdb() throws Exception {
+
+        mockWebServer.enqueue(
+                new MockResponse()
+                        .setResponseCode(200)
+                        .addHeader("Content-Type", "application/json")
+                        .setBody("""
+                                {
+                                    "page": 2,
+                                    "total_pages": 5,
+                                    "total_results": 42,
+                                    "results": [
+                                        {
+                                            "id": 1,
+                                            "title": "Interstellar",
+                                            "overview": "Un film di fantascienza",
+                                            "vote_average": 8.6
+                                        }
+                                     ]
+                                    }
+                                """));
+
+        MovieResponseDto result = tmdbClient.searchMovies("Interstellar", 2);
+
+        RecordedRequest request = mockWebServer.takeRequest();
+
+        assertEquals(
+                "/search/movie?query=Interstellar&page=2",
+                request.getPath());
+        assertEquals(2, result.getPage());
+        assertEquals(5, result.getTotalPages());
+        assertEquals(42, result.getTotalResults());
 
     }
 }
