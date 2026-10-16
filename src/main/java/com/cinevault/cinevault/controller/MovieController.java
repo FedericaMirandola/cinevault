@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cinevault.cinevault.dto.MovieDetailsDto;
 import com.cinevault.cinevault.dto.MovieDto;
+import com.cinevault.cinevault.dto.MovieResponseDto;
 import com.cinevault.cinevault.entity.Movie;
 import com.cinevault.cinevault.service.MovieService;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +39,9 @@ public class MovieController {
     }
 
     @GetMapping("/search") // crea GET /api/movies/search?query = stringa da cercare
-    public List<MovieDto> searchMovies(@RequestParam @NotBlank  String query) {
-        return movieService.searchMovies(query);
+    public MovieResponseDto searchMovies(@RequestParam @NotBlank String query, 
+                                        @RequestParam(defaultValue = "1") @Min(1) int page) {
+        return movieService.searchMovies(query, page);
     }
 
     @GetMapping("/{id}")
