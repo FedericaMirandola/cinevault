@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import com.cinevault.cinevault.exception.EmailAlreadyRegisteredException;
 import com.cinevault.cinevault.exception.FavoriteMovieNotFoundException;
 import com.cinevault.cinevault.exception.TmdbException;
 
@@ -31,4 +33,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage()); 
     }
+    
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException except) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Dati di registrazione non validi");
+    }
+
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity<String> handleEmailAlreadyRegisteredException(EmailAlreadyRegisteredException exc) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(exc.getMessage());
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.cinevault.cinevault.entity.Role;
 import com.cinevault.cinevault.entity.User;
+import com.cinevault.cinevault.exception.EmailAlreadyRegisteredException;
 import com.cinevault.cinevault.repository.UserRepository;
 
 
@@ -32,7 +33,7 @@ public class UserService {
         Optional<User> existingUser = userRepo.findByEmail(email);
 
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("La mail corrisponde ad utente già registrato!");
+            throw new EmailAlreadyRegisteredException("La mail corrisponde ad utente già registrato!");
         } 
 
         // Step 2: se la mail nn esiste allora codifica la pwd con PasswordEncoder
